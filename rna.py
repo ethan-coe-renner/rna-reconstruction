@@ -198,7 +198,7 @@ class Graph:
         print("vertices:",vertices)
         self.vertices = vertices
         self.V = len(vertices)  #No. of vertices
-        self.graph = defaultdict(list)  # default dictionary to store graph
+        self.graph = {} # default dictionary to store graph
 
     def create_graph(self, uc_digest, g_digest):
         self.add_edge(0, 1, "")  # add start edge
@@ -229,7 +229,10 @@ class Graph:
 
     # function to add an edge to graph
     def add_edge(self, u, v, base):
-        self.graph[u].append((v, base))
+        if u in self.graph:
+            self.graph[u].append((v, base))
+        else:
+            self.graph[u] = [(v,base)]
 
     # This function removes edge u-v from graph
     def remove_edge(self, u, v):
@@ -289,10 +292,10 @@ class Graph:
 
         # check if valid edge based on next dfs
         for v in self.graph[u]:
-            print("checking edge", u, "to", v[0])
+            # print("checking edge", u, "to", v[0])
             if self.is_valid_next_edge(u, v[0], current=False):
                 possibles.append(v)
-                print("valid edge", u, "to", v[0])
+                # print("valid edge", u, "to", v[0])
         if possibles:
             euler_cycle += self.vertices[u] + possibles[0][1]
             self.remove_edge(u, possibles[0][0])
