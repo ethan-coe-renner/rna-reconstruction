@@ -104,8 +104,6 @@ def get_end(start_and_end, abnormals):
     end = None
     for base in start_and_end:
         for abnormal in abnormals:
-            print("base: ", base)
-            print("abnormal: ", abnormal)
             if base in abnormal:
                 end = abnormal
                 break
@@ -173,7 +171,6 @@ def add_end(vertices, end):
 # get the full list of vertices, with the *, start at the start and end at the end
 def get_vertices(uc_digest, g_digest):
     vertices = get_interior_vertices(uc_digest, g_digest)
-    print("interior vertices:", vertices)
 
     start, end = get_start_and_end(uc_digest, g_digest)
 
@@ -205,11 +202,9 @@ class Graph:
 
     def create_graph(self, uc_digest, g_digest):
         self.add_edge(0, 1, "")  # add start edge
-        print(self.graph)
 
         for frag in uc_digest:
             edge = get_edge(frag, ['g'])
-            print("edge: ",edge)
             if not edge:
                 continue
             if len(edge) == 2:
@@ -243,14 +238,13 @@ class Graph:
                 x = self.graph[u][index][1]
                 self.graph[u].pop(index)
                 return x
-        print("returning none from rmv")
+        print("Error: returning none from rmv")
         return ""
 
     def DFSCount(self, v, visited):
         count = 1
         visited[v] = True
         for i in self.graph[v]:
-            # print(i)
             if visited[i[0]] == False:
                 count = count + self.DFSCount(i[0], visited)
         return count
@@ -263,17 +257,17 @@ class Graph:
         else:
             visited = [False] * (self.V)
             count1 = self.DFSCount(u if current else v, visited)
-            print(visited)
+            # print(visited)
 
             base = self.remove_edge(u, v)
             # print('removing edge in valid check',self.graph)
             visited = [False] * (self.V)
             count2 = self.DFSCount(u if current else v, visited)
-            print(visited)
+            # print(visited)
 
             self.add_edge(u, v, base)
             # print('adding edge in valid check',self.graph)
-            print("count1:", count1, "count2:", count2)
+            # print("count1:", count1, "count2:", count2)
 
             return False if count1 > count2 else True
 
@@ -283,10 +277,10 @@ class Graph:
         possibles = []
         # check if valid edge based on current dfs
         for v in self.graph[u]:
-            print("checking edge", u, "to", v[0])
+            # print("checking edge", u, "to", v[0])
             if self.is_valid_next_edge(u, v[0], current=True):
                 possibles.append(v)
-                print("valid edge", u, "to", v[0])
+                # print("valid edge", u, "to", v[0])
         if possibles:
             euler_cycle += self.vertices[u] + possibles[0][1]
             self.remove_edge(u, possibles[0][0])
@@ -328,12 +322,11 @@ class Graph:
             self.print_euler_util(left)
             left = self.left()
         print("reconstruction:", euler_cycle + "*")
-        print(self.graph)
 
 
 def main():
     print("RNA Reconstruction")
-    response = input("Would you like to see an example (y/n)?")
+    response = input("Would you like to see an example (y/n)? ")
     if response != 'n':
         example()
         return
@@ -363,25 +356,30 @@ def main():
 
 def example():
     # Lecture Mar 21
-    g_digest = ["uaccug", "cg", "g", "g", "g"]
-    uc_digest = ["u", "ac", "c", "u", "gc","gggg"]
+    # g_digest = ["uaccug", "cg", "g", "g", "g"]
+    # uc_digest = ["u", "ac", "c", "u", "gc","gggg"]
     
-    # HW 7 prob 1
-    # g_digest = ["ag", "aag", "ucucag"]
-    # uc_digest = ["c", "c", "u", "aagu", "agag"]
+    choice = int(input("Choose from HW 7 prob (1) or problem (2): "))
+    print("\n------------------\n")
+    if choice == 1:
+        print("Example from HW 7 Problem 1:")
+        g_digest = ["ag", "aag", "ucucag"]
+        uc_digest = ["c", "c", "u", "aagu", "agag"]
+    elif choice == 2:
+        print("Example from HW 7 Problem 2:")
+        uc_digest = ['c', 'c', 'agu', 'gagu', 'ggau', 'agu']
+        g_digest = ['g', 'u', 'ag', 'ag', 'aug', 'uag', 'uccg']
+    else:
+        print("Invalid choice")
+        return
 
-    # HW 7 prob 2
-    uc_digest = ['c', 'c', 'agu', 'gagu', 'ggau', 'agu']
-    g_digest = ['g', 'u', 'ag', 'ag', 'aug', 'uag', 'uccg']
-
-    print("Example:")
     print("UC-Digest:", uc_digest)
     print("G-Digest:", g_digest)
 
     v = get_vertices(uc_digest, g_digest)
     g = Graph(v)
     g.create_graph(uc_digest, g_digest)
-    print(g.graph)
+    print("Graph: ", g.graph)
 
     g.print_euler_cycle()
 
