@@ -280,14 +280,36 @@ class Graph:
     # Print Euler tour starting from vertex u
     def print_euler_util(self, u):
         global euler_cycle
+        possibles = []
+        # check if valid edge based on current dfs
         for v in self.graph[u]:
             print("checking edge", u, "to", v[0])
             if self.is_valid_next_edge(u, v[0], current=True):
+                possibles.append(v)
                 print("valid edge", u, "to", v[0])
-                euler_cycle += self.vertices[u] + v[1]
-                self.remove_edge(u, v[0])
-                self.print_euler_util(v[0])
+        if possibles:
+            euler_cycle += self.vertices[u] + possibles[0][1]
+            self.remove_edge(u, possibles[0][0])
+            self.print_euler_util(possibles[0][0])
+            return
 
+        # check if valid edge based on next dfs
+        for v in self.graph[u]:
+            print("checking edge", u, "to", v[0])
+            if self.is_valid_next_edge(u, v[0], current=False):
+                possibles.append(v)
+                print("valid edge", u, "to", v[0])
+        if possibles:
+            euler_cycle += self.vertices[u] + possibles[0][1]
+            self.remove_edge(u, possibles[0][0])
+            self.print_euler_util(possibles[0][0])
+            return
+
+    def left(self):
+        for (i,val) in self.graph.items():
+            if val:
+                return i
+        return None
 
     def print_euler_cycle(self):
         #Find a vertex with odd degree
@@ -301,6 +323,10 @@ class Graph:
         euler_cycle = ""
         print("\n")
         self.print_euler_util(u)
+        left = self.left() # whats left in the graph
+        while left:
+            self.print_euler_util(left)
+            left = self.left()
         print("reconstruction:", euler_cycle + "*")
         print(self.graph)
 
