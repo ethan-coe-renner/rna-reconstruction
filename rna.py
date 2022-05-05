@@ -254,6 +254,7 @@ class Graph:
 
     # The function to check if edge u-v can be considered as next edge in
     # Euler Tour
+    # current indicates if this should be from the current node or from v
     def is_valid_next_edge(self, u, v, current:bool):
         if len(self.graph[u]) == 1:
             return True
@@ -318,13 +319,13 @@ class Graph:
         # Print tour starting from odd vertex
         global euler_cycle
         euler_cycle = ""
-        print("\n")
+        # print("\n")
         self.print_euler_util(u)
         left = self.left() # whats left in the graph
         while left:
             self.print_euler_util(left)
             left = self.left()
-        print("reconstruction:", euler_cycle + "*")
+        print("Reconstruction:", euler_cycle + "*")
 
 
 def main():
@@ -353,7 +354,6 @@ def main():
     g = Graph(v)
     g.create_graph(uc_digest, g_digest)
 
-    print("Reconstruction: ")
     g.print_euler_cycle()
 
 
